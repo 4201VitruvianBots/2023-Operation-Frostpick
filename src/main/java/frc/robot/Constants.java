@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -18,13 +22,17 @@ public final class Constants {
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 1.0; // FIXME Measure and set trackwidth
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6294501;
+
+    public static final double FALCON_500_FREE_SPEED = 6380;
+    public static final GearRatio GEAR_RATIO = GearRatio.L2;
+    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2;
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 1.0; // FIXME Measure and set wheelbase
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.6294501; // FIXME Measure and set wheelbase
 
     public static final int DRIVETRAIN_PIGEON_ID = 0; // FIXME Set Pigeon ID
 
