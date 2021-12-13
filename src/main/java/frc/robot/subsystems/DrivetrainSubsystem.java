@@ -8,10 +8,12 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -69,6 +71,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
+    private SwerveDriveOdometry m_odometry;
+
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
     public DrivetrainSubsystem() {
@@ -77,6 +81,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void initializeMotors(ShuffleboardTab tab){
+        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
+
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -128,7 +134,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
     }
 
-
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
      * 'forwards' direction.
@@ -145,14 +150,34 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds = chassisSpeeds;
     }
 
-    @Override
-    public void periodic() {
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+    public void actuateModules(SwerveModuleState[] states){
+
         SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        m_odometry.update(getGyroscopeRotation(), states);
 
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+    }
+
+
+    @Override
+    public void periodic() {
+        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+        actuateModules(states);
+    }
+
+
+    public SwerveDriveKinematics getKinematics(){
+        return m_kinematics;
+    }
+
+    public Pose2d getCurrentPose(){
+        return m_odometry.getPoseMeters();
+    }
+
+    public void resetOdometry(Pose2d pose){
+        m_odometry.resetPosition(pose, getGyroscopeRotation());
     }
 }
