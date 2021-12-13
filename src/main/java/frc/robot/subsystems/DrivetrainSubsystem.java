@@ -77,9 +77,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+        initializeMotors(tab);
+    }
 
-        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
-
+    public void initializeMotors(ShuffleboardTab tab){
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
