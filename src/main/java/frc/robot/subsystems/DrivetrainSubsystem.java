@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -71,6 +72,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
+    // Odometry for storing the position of the robot
     private SwerveDriveOdometry m_odometry;
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -159,11 +161,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
     }
 
+    public void updateOffsets(){
+        Constants.FRONT_LEFT_STEER_OFFSET = SmartDashboard.getNumber("FRONT_LEFT_STEER_OFFSET", 0);
+        Constants.FRONT_RIGHT_STEER_OFFSET = SmartDashboard.getNumber("FRONT_RIGHT_STEER_OFFSET", 0);
+        Constants.BACK_LEFT_STEER_OFFSET = SmartDashboard.getNumber("BACK_LEFT_STEER_OFFSET", 0);
+        Constants.BACK_RIGHT_STEER_OFFSET = SmartDashboard.getNumber("BACK_RIGHT_STEER_OFFSET", 0);
+    }
+
 
     @Override
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         actuateModules(states);
+        updateOffsets();
     }
 
 

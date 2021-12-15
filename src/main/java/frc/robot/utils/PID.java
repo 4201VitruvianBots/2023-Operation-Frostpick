@@ -1,12 +1,14 @@
 package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
-public class Pid {
+public class PID {
     
     ShuffleboardTab tab;
     ShuffleboardLayout layout;
@@ -20,7 +22,7 @@ public class Pid {
     double kI;
     double kD;
 
-    public Pid(String name, double kP, double kI, double kD){
+    public PID(String name, double kP, double kI, double kD){
         tab = Shuffleboard.getTab("PID");
         this.name = name;
 
@@ -41,6 +43,10 @@ public class Pid {
         kP = sb_kP.getDouble(0);
         kI = sb_kI.getDouble(0);
         kD = sb_kD.getDouble(0);
+    }
+
+    public ProfiledPIDController getAsProfiledPIDController(TrapezoidProfile.Constraints constraints){
+        return new ProfiledPIDController(kP, kI, kD, constraints);
     }
 
     public double getkP() {

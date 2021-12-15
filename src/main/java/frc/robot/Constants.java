@@ -8,8 +8,10 @@ import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
 
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import frc.robot.utils.Conversion;
-import frc.robot.utils.Pid;
+import frc.robot.utils.PID;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -62,23 +64,30 @@ public final class Constants {
     public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_STEER_ENCODER = 9;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set front left steer offset
+    public static double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set front left steer offset
 
     // BACK RIGHT : Railroad
     public static final int BACK_RIGHT_DRIVE_MOTOR = 3;
     public static final int BACK_RIGHT_STEER_MOTOR = 4;
     public static final int BACK_RIGHT_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back right steer offset
+    public static double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back right steer offset
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_DRIVE_MOTOR = 5;
     public static final int FRONT_RIGHT_STEER_MOTOR = 6;
     public static final int FRONT_RIGHT_STEER_ENCODER = 11;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
+    public static double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 7;
     public static final int BACK_LEFT_STEER_MOTOR = 8;
     public static final int BACK_LEFT_STEER_ENCODER = 12;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
+    public static double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
+
+
+    // Declare PIDS HERE:
+    public static final PID AUTO_X_PID = new PID("Auto-X PID", 0.2, 0, 0);
+    public static final PID AUTO_Y_PID = new PID("Auto-Y PID", 0.2, 0, 0);
+    public static final ProfiledPIDController AUTO_THETA_PID = new PID("Auto-Theta PID", 0.2, 0, 0).getAsProfiledPIDController(
+        new TrapezoidProfile.Constraints(10, 11));
 }
