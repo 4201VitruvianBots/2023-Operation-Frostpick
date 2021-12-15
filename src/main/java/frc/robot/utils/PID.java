@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
+/**
+ * PID
+ */
 public class PID {
     
     ShuffleboardTab tab;
@@ -23,6 +26,18 @@ public class PID {
     double kI;
     double kD;
 
+    /**
+     * @param name
+     *  Name of the PID to put on Shuffleboard
+     * @param kP
+     *  Proportinal Value of the PID
+     * @param kI
+     *  Integral Value of the PID
+     * @param kD
+     *  Derivative Value of the PID
+     * 
+     * <p>For more information on PIDS: https://frc-pdr.readthedocs.io/en/latest/control/pid_control.html</p>
+     */
     public PID(String name, double kP, double kI, double kD){
         tab = Shuffleboard.getTab("PID");
         this.name = name;
@@ -32,6 +47,9 @@ public class PID {
         this.kD = kD;
     }
 
+    /**
+     * Adds the P, I, D values on shuffleboard with the given name in the constructer
+     */
     public void addToShuffleboard(){
         layout = tab.getLayout(name, BuiltInLayouts.kList);
 
@@ -40,6 +58,9 @@ public class PID {
         sb_kD = layout.add("kD", 0).getEntry();
     }
 
+    /**
+     * 
+     */
     public void syncShuffleboard(){
         kP = sb_kP.getDouble(0);
         kI = sb_kI.getDouble(0);

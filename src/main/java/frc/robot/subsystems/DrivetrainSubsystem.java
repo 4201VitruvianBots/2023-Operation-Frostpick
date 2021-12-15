@@ -66,7 +66,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
 
-    // These are our modules. We initialize them in the constructor.
+    // These are our modules. We initialize them in the initializeMotors method.
     private SwerveModule m_frontLeftModule;
     private SwerveModule m_frontRightModule;
     private SwerveModule m_backLeftModule;
@@ -75,6 +75,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Odometry for storing the position of the robot
     private SwerveDriveOdometry m_odometry;
 
+    // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
     public DrivetrainSubsystem() {
@@ -142,14 +143,27 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_pigeon.setFusedHeading(0.0);
     }
 
+    /**
+     * Gets the current rotation from the Gyroscope
+     * @return
+     *  Degreess from the Pigeon (NOT ROTATION2D)
+     */
     public Rotation2d getGyroscopeRotation() {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
     }
 
+    /**
+     * Sets the chassisSpeeds object in drivetrain
+     */
     public void drive(ChassisSpeeds chassisSpeeds) {
         m_chassisSpeeds = chassisSpeeds;
     }
 
+    /**
+     * Sets module states of all the modules
+     * @param states
+     *  SwerveModuleState array, Order: FL, FR, BL, BR
+     */
     public void actuateModules(SwerveModuleState[] states){
 
         SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
@@ -161,6 +175,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
     }
 
+    /**
+     * Sets the offset from SmartDashboard
+     */
     public void updateOffsets(){
         Constants.FRONT_LEFT_STEER_OFFSET = SmartDashboard.getNumber("FRONT_LEFT_STEER_OFFSET", 0);
         Constants.FRONT_RIGHT_STEER_OFFSET = SmartDashboard.getNumber("FRONT_RIGHT_STEER_OFFSET", 0);
@@ -177,14 +194,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
 
+    /**
+     * Returns the SwerveDriveKinematics object
+     */
     public SwerveDriveKinematics getKinematics(){
         return m_kinematics;
     }
 
+    /**
+     * Returns the current position of the robot from the Odometry
+     */
     public Pose2d getCurrentPose(){
         return m_odometry.getPoseMeters();
     }
 
+    /**
+     * Resets the Odometry to the specified Pose
+     * ONLY USE IF YOU KNOW WHAT YOU ARE DOING
+     * @param pose
+     *  The Pose to reset the odometry to
+     */
     public void resetOdometry(Pose2d pose){
         m_odometry.resetPosition(pose, getGyroscopeRotation());
     }
