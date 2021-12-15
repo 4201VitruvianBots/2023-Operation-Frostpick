@@ -59,7 +59,7 @@ public class PID {
     }
 
     /**
-     * 
+     * Sets the PID values based off of what is on Shuffleboard
      */
     public void syncShuffleboard(){
         kP = sb_kP.getDouble(0);
@@ -67,22 +67,44 @@ public class PID {
         kD = sb_kD.getDouble(0);
     }
 
+    /**
+     * @param constraints
+     *  TrapezoidProfile.Constraints. Takes in a MaxVelocity, and MaxAcceleration
+     * @return
+     *  The PID as a ProfiledPIDController
+     */
     public ProfiledPIDController getAsProfiledPIDController(TrapezoidProfile.Constraints constraints){
         return new ProfiledPIDController(kP, kI, kD, constraints);
     }
 
+    /**
+     * @return
+     *  The PID as a PIDController
+     */
     public PIDController getAsPidController(){
         return new PIDController(kP, kI, kD);
     }
 
+    /**
+     * @return
+     *  The Proprtional value of the PID
+     */
     public double getkP() {
         return kP;
     }
 
+    /**
+     * @return
+     *  The Integral value of the PID
+     */
     public double getkI() {
         return kI;
     }
 
+    /**
+     * @return
+     *  The Derivative value of the PID
+     */
     public double getkD() {
         return kD;
     }

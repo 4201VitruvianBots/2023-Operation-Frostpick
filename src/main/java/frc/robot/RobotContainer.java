@@ -69,6 +69,15 @@ public class RobotContainer {
     return new InstantCommand();
   }
 
+  /**
+   * Deadbands a value based on the given constraints
+   * @param value
+   *    The raw value to deadband
+   * @param deadband
+   *    The deadband constraint
+   * @return
+   *    Deadbanded value
+   */
   private static double deadband(double value, double deadband) {
     if (Math.abs(value) > deadband) {
       if (value > 0.0) {
@@ -81,6 +90,13 @@ public class RobotContainer {
     }
   }
 
+  /**
+   * Modifies the value passed in, deadbanded, and squared
+   * @param value
+   *    The raw value to be modified
+   * @return
+   *    The modified value
+   */
   private static double modifyAxis(double value) {
     // Deadband
     value = deadband(value, 0.05);

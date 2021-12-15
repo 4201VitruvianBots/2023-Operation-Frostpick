@@ -23,7 +23,7 @@ public class TrajectoryFollow {
             drivetrain::getCurrentPose,
             // Getting the kinematics from the drivetrain
             drivetrain.getKinematics(),
-            // Position controllers
+            // Position PIDControllers from PIDContainr
             PIDContainer.AUTO_X_PID.getAsPidController(),
             PIDContainer.AUTO_Y_PID.getAsPidController(),
             PIDContainer.AUTO_THETA_PID,

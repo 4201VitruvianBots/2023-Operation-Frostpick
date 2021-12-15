@@ -185,7 +185,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         Constants.BACK_RIGHT_STEER_OFFSET = SmartDashboard.getNumber("BACK_RIGHT_STEER_OFFSET", 0);
     }
 
-
+    /**
+     * Periodic method of Drivetrain, runs every 20ms
+     */
     @Override
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
