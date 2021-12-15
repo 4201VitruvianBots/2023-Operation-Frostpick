@@ -3,6 +3,7 @@ package frc.robot.utils;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -47,6 +48,10 @@ public class PID {
 
     public ProfiledPIDController getAsProfiledPIDController(TrapezoidProfile.Constraints constraints){
         return new ProfiledPIDController(kP, kI, kD, constraints);
+    }
+
+    public PIDController getAsPidController(){
+        return new PIDController(kP, kI, kD);
     }
 
     public double getkP() {

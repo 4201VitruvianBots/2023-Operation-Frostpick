@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class TrajectoryFollow {
@@ -14,11 +16,11 @@ public class TrajectoryFollow {
   public SequentialCommandGroup getTrajectoryCommand(DrivetrainSubsystem drivetrain, Trajectory trajectory) {
 
     // Creates a new PID Controller to control the X position of the Robot
-    PIDController xController = new PIDController(3, 0, 0);
+    PIDController xController = Constants.AUTO_X_PID.getAsPidController();
     // Creates a new PID Controller to control the Y Position of the Robot
-    PIDController yController = new PIDController(3, 0, 0);
+    PIDController yController = Constants.AUTO_Y_PID.getAsPidController();
     // Creates a new PID Controller to control the angle of the robot, with Max Velocity and Max Acceleration constraints
-    ProfiledPIDController thetaController = new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14));
+    ProfiledPIDController thetaController = Constants.AUTO_THETA_PID;
     // Makes sure that the PID outputs values from -180 to 180 degrees
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
