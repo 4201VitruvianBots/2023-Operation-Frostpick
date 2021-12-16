@@ -9,33 +9,36 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class TrajectoryFollow {
 
-  public SequentialCommandGroup getTrajectoryCommand(DrivetrainSubsystem drivetrain, Trajectory trajectory) {
+    public SequentialCommandGroup getTrajectoryCommand(DrivetrainSubsystem drivetrain, Trajectory trajectory) {
 
-    // Makes sure that the PID outputs values from -180 to 180 degrees
-    PIDContainer.AUTO_THETA_PID.enableContinuousInput(-Math.PI, Math.PI);
+        // Makes sure that the PID outputs values from -180 to 180 degrees
+        PIDContainer.AUTO_THETA_PID.enableContinuousInput(-Math.PI, Math.PI);
 
-    // Creates a new SwerveControllerCommand
-    SwerveControllerCommand swerveControllerCommand =
-        new SwerveControllerCommand(
-            // The trajectory to follow
-            trajectory,
-            // A method refrence for constantly getting current position of the robot
-            drivetrain::getCurrentPose,
-            // Getting the kinematics from the drivetrain
-            drivetrain.getKinematics(),
-            // Position PIDControllers from PIDContainr
-            PIDContainer.AUTO_X_PID.getAsPidController(),
-            PIDContainer.AUTO_Y_PID.getAsPidController(),
-            PIDContainer.AUTO_THETA_PID,
-            // A method refrence for setting the state of the modules
-            drivetrain::actuateModules,
-            // Requirment of a drivetrain subsystem
-            drivetrain);
+        // Creates a new SwerveControllerCommand
+        SwerveControllerCommand swerveControllerCommand =
+            new SwerveControllerCommand(
+                // The trajectory to follow
+                trajectory,
+                // A method refrence for constantly getting current position of the robot
+                drivetrain::getCurrentPose,
+                // Getting the kinematics from the drivetrain
+                drivetrain.getKinematics(),
+                // Position PIDControllers from PIDContainer
+                PIDContainer.AUTO_X_PID.getAsPidController(),
+                PIDContainer.AUTO_Y_PID.getAsPidController(),
+                PIDContainer.AUTO_THETA_PID,
+                // A method refrence for setting the state of the modules
+                drivetrain::actuateModules,
+                // Requirment of a drivetrain subsystem
+                drivetrain);
 
-    // Reset odometry to the starting pose of the trajectory. This effectively transforms the trajectory to the current pose of the robot
-    drivetrain.resetOdometry(trajectory.getInitialPose());
-  
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> drivetrain.drive(new ChassisSpeeds(0.0, 0.0, 0.0)));
-  }
+        /*
+         *  Reset odometry to the starting pose of the trajectory. 
+         *  This effectively transforms the trajectory to the current pose of the robot
+         */
+        drivetrain.resetOdometry(trajectory.getInitialPose());
+
+        // Run path following command, then stop at the end.
+        return swerveControllerCommand.andThen(() -> drivetrain.drive(new ChassisSpeeds(0.0, 0.0, 0.0)));
+    }
 }

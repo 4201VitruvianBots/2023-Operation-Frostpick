@@ -4,12 +4,19 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.TrajectoryFollow;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
@@ -21,6 +28,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final TrajectoryFollow m_trajectoryFollow = new TrajectoryFollow();
 
   private final XboxController m_controller = new XboxController(0);
 
@@ -64,10 +72,20 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new InstantCommand();
-  }
+    public Command getAutonomousCommand() {
+        // An ExampleCommand will run in autonomous
+        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, loadTrajectory(Constants.trajectoryPath));
+    }
+
+    public Trajectory loadTrajectory(String jsonPath){
+        try{
+            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(jsonPath);
+            return TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        } catch (IOException ioe){
+            DriverStation.reportError("Unable to open trajectory: " + jsonPath, ioe.getStackTrace());
+        }
+        return null;
+    }
 
   /**
    * Deadbands a value based on the given constraints

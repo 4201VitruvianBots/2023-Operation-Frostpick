@@ -48,7 +48,7 @@ public class PID {
     }
 
     /**
-     * Adds the P, I, D values on shuffleboard with the given name in the constructer
+     *  Adds the P, I, D values on shuffleboard with the given name in the constructer
      */
     public void addToShuffleboard(){
         layout = tab.getLayout(name, BuiltInLayouts.kList);
