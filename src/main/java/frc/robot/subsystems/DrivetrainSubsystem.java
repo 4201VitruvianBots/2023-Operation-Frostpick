@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
@@ -16,7 +17,6 @@ import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -70,6 +70,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
+    // Network Table Entries for applying offsets from Shuffleboard
+    private NetworkTableEntry sb_applyAll;
+    private NetworkTableEntry sb_frontLeftOffset;
+    private NetworkTableEntry sb_frontRightOffset;
+    private NetworkTableEntry sb_backLeftOffset;
+    private NetworkTableEntry sb_backRightOffset;
+
     private ShuffleboardTab tab;
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -78,14 +85,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
         tab = Shuffleboard.getTab("Drivetrain");
         initializeMotors(tab);
 
-        tab.add("Apple all Offsets", false);
-        tab.add("Front Left Offset Apply", false);
-        tab.add("Front Right Offset Apply", false);
-        tab.add("Back Left Offset Apply", false);
-        tab.add("Back Right Offset Apply", false);
+        // Initilizes and addes the Network Table Entries to Shuffleboard
+        sb_applyAll = tab.add("Apple all Offsets", false).getEntry();
+        sb_frontLeftOffset = tab.add("Front Left Offset Apply", false).getEntry();
+        sb_frontRightOffset = tab.add("Front Right Offset Apply", false).getEntry();
+        sb_backLeftOffset = tab.add("Back Left Offset Apply", false).getEntry();
+        sb_backRightOffset = tab.add("Back Right Offset Apply", false).getEntry();
 
     }
 
+    /**
+     * Constructs the SwerveModules
+     * @param tab Shuffleboard Drivetrain tab
+     */
     public void initializeMotors(ShuffleboardTab tab){
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
@@ -157,6 +169,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        checkOffsets();
+
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
@@ -165,7 +179,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
     
-        
+    }
+
+    /**
+     * Checks if offset button has been clicked from Shuffleboard, and sets offsets if clicked
+     */
+    private void checkOffsets(){
+        if(sb_applyAll.getBoolean(false)){
+            Constants.FRONT_LEFT_STEER_OFFSET = m_frontLeftModule.getSteerAngle();
+            Constants.FRONT_RIGHT_STEER_OFFSET = m_frontRightModule.getSteerAngle();
+            Constants.BACK_LEFT_STEER_OFFSET = m_backLeftModule.getSteerAngle();
+            Constants.BACK_RIGHT_STEER_OFFSET = m_backRightModule.getSteerAngle();
+        }
+
+        Constants.FRONT_LEFT_STEER_OFFSET = sb_frontLeftOffset.getBoolean(false) ? m_frontLeftModule.getSteerAngle() : Constants.FRONT_LEFT_STEER_OFFSET;
+        Constants.FRONT_RIGHT_STEER_OFFSET = sb_frontRightOffset.getBoolean(false) ? m_frontRightModule.getSteerAngle() : Constants.FRONT_RIGHT_STEER_OFFSET;
+        Constants.BACK_LEFT_STEER_OFFSET = sb_backLeftOffset.getBoolean(false) ? m_backLeftModule.getSteerAngle() : Constants.BACK_LEFT_STEER_OFFSET;
+        Constants.BACK_RIGHT_STEER_OFFSET = sb_backRightOffset.getBoolean(false) ? m_backRightModule.getSteerAngle() : Constants.BACK_RIGHT_STEER_OFFSET;
 
     }
 }

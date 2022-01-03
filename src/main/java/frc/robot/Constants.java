@@ -62,23 +62,23 @@ public final class Constants {
     public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_STEER_ENCODER = 1;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set front left steer offset
+    public static double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set front left steer offset
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_DRIVE_MOTOR = 3;
     public static final int FRONT_RIGHT_STEER_MOTOR = 4;
     public static final int FRONT_RIGHT_STEER_ENCODER = 2;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
+    public static double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
 
     // BACK RIGHT : Railroad
     public static final int BACK_RIGHT_DRIVE_MOTOR = 5;
     public static final int BACK_RIGHT_STEER_MOTOR = 6;
     public static final int BACK_RIGHT_STEER_ENCODER = 3;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back right steer offset
+    public static double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back right steer offset
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 7;
     public static final int BACK_LEFT_STEER_MOTOR = 8;
     public static final int BACK_LEFT_STEER_ENCODER = 4;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
+    public static double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
 }
