@@ -70,28 +70,29 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
-    // Network Table Entries for applying offsets from Shuffleboard
+    // Network Table Entry for applying offsets from Shuffleboard
     private NetworkTableEntry sb_applyAll;
-    private NetworkTableEntry sb_frontLeftOffset;
-    private NetworkTableEntry sb_frontRightOffset;
-    private NetworkTableEntry sb_backLeftOffset;
-    private NetworkTableEntry sb_backRightOffset;
 
     private ShuffleboardTab tab;
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+    private double[] offsets;
+
     public DrivetrainSubsystem() {
         tab = Shuffleboard.getTab("Drivetrain");
+
+        offsets = new double[]{
+            Constants.FRONT_LEFT_STEER_OFFSET, 
+            Constants.FRONT_RIGHT_STEER_OFFSET,
+            Constants.BACK_LEFT_STEER_OFFSET,
+            Constants.BACK_RIGHT_STEER_OFFSET
+        };
+
         initializeMotors(tab);
 
         // Initilizes and addes the Network Table Entries to Shuffleboard
         sb_applyAll = tab.add("Apple all Offsets", false).getEntry();
-        sb_frontLeftOffset = tab.add("Front Left Offset Apply", false).getEntry();
-        sb_frontRightOffset = tab.add("Front Right Offset Apply", false).getEntry();
-        sb_backLeftOffset = tab.add("Back Left Offset Apply", false).getEntry();
-        sb_backRightOffset = tab.add("Back Right Offset Apply", false).getEntry();
-
     }
 
     /**
@@ -172,6 +173,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
         checkOffsets();
 
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+
+        // If apply offsets was clicked, it sets all the states to be the angle when the button was clicked
+        for(int i = 0; i <= 3; i++){
+            states[i].angle.plus(new Rotation2d(offsets[i]));
+        }
+
         SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
@@ -186,16 +193,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     private void checkOffsets(){
         if(sb_applyAll.getBoolean(false)){
-            Constants.FRONT_LEFT_STEER_OFFSET = m_frontLeftModule.getSteerAngle();
-            Constants.FRONT_RIGHT_STEER_OFFSET = m_frontRightModule.getSteerAngle();
-            Constants.BACK_LEFT_STEER_OFFSET = m_backLeftModule.getSteerAngle();
-            Constants.BACK_RIGHT_STEER_OFFSET = m_backRightModule.getSteerAngle();
+            offsets[0] = -Math.toRadians(m_frontLeftModule.getSteerAngle());
+            offsets[1] = -Math.toRadians(m_frontRightModule.getSteerAngle());
+            offsets[2] = -Math.toRadians(m_backLeftModule.getSteerAngle());
+            offsets[3] = -Math.toRadians(m_backRightModule.getSteerAngle());
         }
-
-        Constants.FRONT_LEFT_STEER_OFFSET = sb_frontLeftOffset.getBoolean(false) ? m_frontLeftModule.getSteerAngle() : Constants.FRONT_LEFT_STEER_OFFSET;
-        Constants.FRONT_RIGHT_STEER_OFFSET = sb_frontRightOffset.getBoolean(false) ? m_frontRightModule.getSteerAngle() : Constants.FRONT_RIGHT_STEER_OFFSET;
-        Constants.BACK_LEFT_STEER_OFFSET = sb_backLeftOffset.getBoolean(false) ? m_backLeftModule.getSteerAngle() : Constants.BACK_LEFT_STEER_OFFSET;
-        Constants.BACK_RIGHT_STEER_OFFSET = sb_backRightOffset.getBoolean(false) ? m_backRightModule.getSteerAngle() : Constants.BACK_RIGHT_STEER_OFFSET;
-
     }
 }
