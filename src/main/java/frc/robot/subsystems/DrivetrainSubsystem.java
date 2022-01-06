@@ -7,14 +7,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
-
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -166,7 +163,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void actuateModules(SwerveModuleState[] states){
 
-        SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
         m_odometry.update(getGyroscopeRotation(), states);
 
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
@@ -176,23 +173,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the offset from SmartDashboard
-     */
-    public void updateOffsets(){
-        Constants.FRONT_LEFT_STEER_OFFSET = SmartDashboard.getNumber("FRONT_LEFT_STEER_OFFSET", 0);
-        Constants.FRONT_RIGHT_STEER_OFFSET = SmartDashboard.getNumber("FRONT_RIGHT_STEER_OFFSET", 0);
-        Constants.BACK_LEFT_STEER_OFFSET = SmartDashboard.getNumber("BACK_LEFT_STEER_OFFSET", 0);
-        Constants.BACK_RIGHT_STEER_OFFSET = SmartDashboard.getNumber("BACK_RIGHT_STEER_OFFSET", 0);
-    }
-
-    /**
      * Periodic method of Drivetrain, runs every 20ms
      */
     @Override
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         actuateModules(states);
-        updateOffsets();
     }
 
 
