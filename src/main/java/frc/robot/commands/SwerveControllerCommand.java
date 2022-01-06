@@ -13,12 +13,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.utils.PathPlannerTrajectory;
+import frc.robot.utils.PathPlannerTrajectory.PathPlannerState;
 
 
 public class SwerveControllerCommand extends CommandBase{
@@ -86,8 +86,8 @@ public class SwerveControllerCommand extends CommandBase{
     public void execute() {
         double currentTime = m_timer.get();
 
-        State desiredState = m_trajectory.sample(currentTime);
-        Rotation2d rotation = m_trajectory.sample(currentTime).poseMeters.getRotation();
+        PathPlannerState desiredState = (PathPlannerState) m_trajectory.sample(currentTime);
+        Rotation2d rotation =  desiredState.holonomicRotation;
 
         ChassisSpeeds targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, rotation);
         SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
