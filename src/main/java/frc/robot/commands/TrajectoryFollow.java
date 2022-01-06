@@ -1,15 +1,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.PIDContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class TrajectoryFollow {
 
-    public SequentialCommandGroup getTrajectoryCommand(DrivetrainSubsystem drivetrain, Trajectory trajectory) {
+    public SequentialCommandGroup getTrajectoryCommand(DrivetrainSubsystem drivetrain, PathPlannerTrajectory trajectory) {
 
         // Makes sure that the PID outputs values from -180 to 180 degrees
         PIDContainer.AUTO_THETA_PID.enableContinuousInput(-Math.PI, Math.PI);

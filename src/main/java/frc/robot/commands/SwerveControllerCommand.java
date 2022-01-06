@@ -5,24 +5,20 @@ import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.HolonomicDriveController;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-// edu.wpi.first.math.trajectory.Trajectory
-import edu.wpi.first.*;
+import frc.robot.utils.PathPlannerTrajectory;
+
 
 public class SwerveControllerCommand extends CommandBase{
     private final Timer m_timer = new Timer();
@@ -31,7 +27,6 @@ public class SwerveControllerCommand extends CommandBase{
     private final SwerveDriveKinematics m_kinematics;
     private final HolonomicDriveController m_controller;
     private final Consumer<SwerveModuleState[]> m_outputModuleStates;
-    private final Supplier<Rotation2d> m_desiredRotation;
 
     /**
      Constructs a new SwerveControllerCommand that when executed will follow the provided
@@ -61,7 +56,6 @@ public class SwerveControllerCommand extends CommandBase{
       PIDController xController,
       PIDController yController,
       ProfiledPIDController thetaController,
-      Supplier<Rotation2d> desiredRotation,
       Consumer<SwerveModuleState[]> outputModuleStates,
       Subsystem... requirements) {
 
@@ -78,9 +72,6 @@ public class SwerveControllerCommand extends CommandBase{
         m_outputModuleStates =
             requireNonNullParam(outputModuleStates, "frontLeftOutput", "SwerveControllerCommand");
 
-        m_desiredRotation =
-            requireNonNullParam(desiredRotation, "desiredRotation", "SwerveControllerCommand");
-
         addRequirements(requirements);
     }
 
@@ -93,15 +84,23 @@ public class SwerveControllerCommand extends CommandBase{
     @Override
     public void execute() {
         double currentTime = m_timer.get();
-        // This will load the file "Example Path.path" and generate it with a max velocity of 8 m/s and a max acceleration of 5 m/s^2
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("Example Path", 8, 5);
 
-        // Sample the state of the path at 1.2 seconds
-        // To access PathPlanner specific information, such as holonomic rotation, the state must be cast to a PathPlannerState
-        PathPlannerState exampleState = (PathPlannerState) examplePath.sample(1.2);
+        State desiredState = m_trajectory.sample(currentTime);
+        Rotation2d rotation = m_trajectory.sample(currentTime).poseMeters.getRotation();
 
-        // Print the holonomic rotation at the sampled time
-        System.out.println(exampleState.holonomicRotation.getDegrees());
+        ChassisSpeeds targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, rotation);
+        SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
 
+        m_outputModuleStates.accept(moduleStates);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+      m_timer.stop();
+    }
+  
+    @Override
+    public boolean isFinished() {
+      return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds());
     }
 }
