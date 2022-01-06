@@ -80,7 +80,10 @@ public final class Constants {
     public static final int BACK_LEFT_STEER_MOTOR = 8;
     public static final int BACK_LEFT_STEER_ENCODER = 12;
     public static double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
+    
+    // The Max Acceleration Value for the robot [only in AUTO]
+    public static final double MAX_ACCEL = 5;
 
-    // Trajectory Path to follow in Auto
-    public static final String trajectoryPath = "paths/tajectory.json";
+    // The Max Velocity for the robot [only in AUTO]
+    public static final double MAX_VEL = 8;
 }

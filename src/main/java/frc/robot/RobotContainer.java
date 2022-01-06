@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TrajectoryFollow;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.utils.LoadPath;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -74,17 +75,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, loadTrajectory(Constants.trajectoryPath));
-    }
-
-    public Trajectory loadTrajectory(String jsonPath){
-        try{
-            Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(jsonPath);
-            return TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-        } catch (IOException ioe){
-            DriverStation.reportError("Unable to open trajectory: " + jsonPath, ioe.getStackTrace());
-        }
-        return null;
+        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("name").getTrajectory());
     }
 
     /**
