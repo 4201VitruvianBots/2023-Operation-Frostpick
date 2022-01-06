@@ -1,13 +1,11 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-
-import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.PIDContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.utils.PathPlannerTrajectory;
 
 public class TrajectoryFollow {
 
