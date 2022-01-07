@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -68,6 +70,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
+    private CANCoder m_frontLeftCanCoder;
+    private CANCoder m_frontRightCanCoder;
+    private CANCoder m_backLeftCanCoder;
+    private CANCoder m_backRightCanCoder;
+
     private ShuffleboardTab tab;
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -75,15 +82,32 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public DrivetrainSubsystem() {
         tab = Shuffleboard.getTab("Drivetrain");
         System.out.println("In DrivetrainSubsystem constructor");
+        initilizeEncoders();
+        initializeModules(tab);
+    }
 
-        initializeMotors(tab);
+    public void initilizeEncoders(){
+        m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_STEER_ENCODER);
+        m_frontRightCanCoder = new CANCoder(Constants.FRONT_RIGHT_STEER_ENCODER);
+        m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_STEER_ENCODER);
+        m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_STEER_ENCODER);
+
+        m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+
+        m_frontLeftCanCoder.configSensorDirection(true);
+        m_frontRightCanCoder.configSensorDirection(true);
+        m_backLeftCanCoder.configSensorDirection(true);
+        m_backRightCanCoder.configSensorDirection(true);
     }
 
     /**
      * Constructs the SwerveModules
      * @param tab Shuffleboard Drivetrain tab
      */
-    public void initializeMotors(ShuffleboardTab tab){
+    public void initializeModules(ShuffleboardTab tab){
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
