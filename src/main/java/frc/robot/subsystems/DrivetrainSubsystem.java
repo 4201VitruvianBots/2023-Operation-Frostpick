@@ -169,10 +169,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
         m_odometry.update(getGyroscopeRotation(), states);
 
+        // System.out.println("\n\n\n" + "From Drivetrain Subsystem");
+        // for(SwerveModuleState s : states){
+        //     System.out.println(s.toString());
+        // }
+
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+
     }
 
     /**

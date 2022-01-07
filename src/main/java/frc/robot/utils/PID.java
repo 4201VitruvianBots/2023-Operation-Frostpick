@@ -52,20 +52,20 @@ public class PID {
      *  Adds the P, I, D values on shuffleboard with the given name in the constructer
      */
     public void addToShuffleboard(){
-        layout = tab.getLayout(name, BuiltInLayouts.kList);
+        layout = tab.getLayout(name, BuiltInLayouts.kGrid).withSize(1, 3);
 
-        sb_kP = layout.add("kP", 0).getEntry();
-        sb_kI = layout.add("kI", 0).getEntry();
-        sb_kD = layout.add("kD", 0).getEntry();
+        sb_kP = layout.add("kP", kP).getEntry();
+        sb_kI = layout.add("kI", kI).getEntry();
+        sb_kD = layout.add("kD", kD).getEntry();
     }
 
     /**
      * Sets the PID values based off of what is on Shuffleboard
      */
     public void syncShuffleboard(){
-        kP = sb_kP.getDouble(0);
-        kI = sb_kI.getDouble(0);
-        kD = sb_kD.getDouble(0);
+        kP = sb_kP.getDouble(kP);
+        kI = sb_kI.getDouble(kI);
+        kD = sb_kD.getDouble(kD);
     }
 
     /**

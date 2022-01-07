@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -91,6 +92,12 @@ public class SwerveControllerCommand extends CommandBase{
 
         ChassisSpeeds targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, rotation);
         SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
+
+        System.out.println("Loop Ran: ");
+        for(SwerveModuleState s : moduleStates){
+            System.out.println(s.toString());
+        }
+        System.out.println("\n\n");
 
         m_outputModuleStates.accept(moduleStates);
     }

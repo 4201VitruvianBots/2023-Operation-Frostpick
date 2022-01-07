@@ -7,5 +7,5 @@
                 "x":4.055513538042655,"y":3.5
             },"holonomicAngle":0.0,"isReversal":false,"velOverride":null,"isLocked":false},{
     "anchorPoint":{
-        "x":3.5,"y":3.5},"prevControl":{
+        "x":3.5,"y":3.99},"prevControl":{
         "x":2.5,"y":3.5},"nextControl":null,"holonomicAngle":0.0,"isReversal":false,"velOverride":null,"isLocked":false}]}

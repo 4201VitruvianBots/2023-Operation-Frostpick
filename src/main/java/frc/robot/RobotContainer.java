@@ -55,9 +55,9 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Back button zeros the gyroscope
-        new Button(m_controller::getBackButton)
-                // No requirements because we don't need to interrupt anything
-                .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        // new Button(m_controller::getBackButton)
+        //         // No requirements because we don't need to interrupt anything
+        //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     }
 
   /**
@@ -67,11 +67,11 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("holonomicPath.path").getTrajectory());
+        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("holonomicPath").getTrajectory());
     }
 
     public PathPlannerTrajectory getTrajectory(){
-        return new LoadPath("holonomicPath.path").getTrajectory();
+        return new LoadPath("holonomicPath").getTrajectory();
     }
 
     /**
