@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -69,29 +68,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
-    // Network Table Entry for applying offsets from Shuffleboard
-    private NetworkTableEntry sb_applyAll;
-
     private ShuffleboardTab tab;
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    private double[] offsets;
-
     public DrivetrainSubsystem() {
         tab = Shuffleboard.getTab("Drivetrain");
-
-        offsets = new double[]{
-            Constants.FRONT_LEFT_STEER_OFFSET, 
-            Constants.FRONT_RIGHT_STEER_OFFSET,
-            Constants.BACK_LEFT_STEER_OFFSET,
-            Constants.BACK_RIGHT_STEER_OFFSET
-        };
+        System.out.println("In DrivetrainSubsystem constructor");
 
         initializeMotors(tab);
-
-        // Initilizes and addes the Network Table Entries to Shuffleboard
-        sb_applyAll = tab.add("Apple all Offsets", false).getEntry();
     }
 
     /**
@@ -169,14 +154,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        checkOffsets();
-
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-
-        // If apply offsets was clicked, it sets all the states to be the angle when the button was clicked
-        for(int i = 0; i <= 3; i++){
-            states[i].angle.plus(new Rotation2d(offsets[i]));
-        }
 
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
@@ -185,17 +163,5 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
     
-    }
-
-    /**
-     * Checks if offset button has been clicked from Shuffleboard, and sets offsets if clicked
-     */
-    private void checkOffsets(){
-        if(sb_applyAll.getBoolean(false)){
-            offsets[0] = -Math.toRadians(m_frontLeftModule.getSteerAngle());
-            offsets[1] = -Math.toRadians(m_frontRightModule.getSteerAngle());
-            offsets[2] = -Math.toRadians(m_backLeftModule.getSteerAngle());
-            offsets[3] = -Math.toRadians(m_backRightModule.getSteerAngle());
-        }
     }
 }
