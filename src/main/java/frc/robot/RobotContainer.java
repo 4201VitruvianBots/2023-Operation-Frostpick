@@ -12,6 +12,7 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TrajectoryFollow;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.utils.LoadPath;
+import frc.robot.utils.PathPlannerTrajectory;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -66,7 +67,11 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("New Path.path").getTrajectory());
+        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("path.path").getTrajectory());
+    }
+
+    public PathPlannerTrajectory getTrajectory(){
+        return new LoadPath("path.path").getTrajectory();
     }
 
     /**

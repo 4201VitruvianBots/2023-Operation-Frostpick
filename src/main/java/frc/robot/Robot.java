@@ -31,6 +31,10 @@ public class Robot extends TimedRobot {
      */
     
     m_robotContainer = new RobotContainer();
+    
+    if(m_robotContainer.getTrajectory() != null){
+      System.out.println(m_robotContainer.getTrajectory().getTotalTimeSeconds());
+    }
   }
 
   /**

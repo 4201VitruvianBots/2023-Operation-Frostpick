@@ -55,31 +55,31 @@ public final class Constants {
     /**
      * CAN ID of the PigeonIMU
      */
-    public static final int DRIVETRAIN_PIGEON_ID = 13;
+    public static final int DRIVETRAIN_PIGEON_ID = 1;
     
     // FRONT LEFT : Florida
     public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_STEER_MOTOR = 2;
-    public static final int FRONT_LEFT_STEER_ENCODER = 9;
-    public static double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set front left steer offset
-
-    // BACK RIGHT : Railroad
-    public static final int BACK_RIGHT_DRIVE_MOTOR = 3;
-    public static final int BACK_RIGHT_STEER_MOTOR = 4;
-    public static final int BACK_RIGHT_STEER_ENCODER = 10;
-    public static double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back right steer offset
+    public static final int FRONT_LEFT_STEER_ENCODER = 1;
+    public static double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(196.600341796875); // FIXME Measure and set front left steer offset
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_DRIVE_MOTOR = 5;
     public static final int FRONT_RIGHT_STEER_MOTOR = 6;
-    public static final int FRONT_RIGHT_STEER_ENCODER = 11;
-    public static double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
-
+    public static final int FRONT_RIGHT_STEER_ENCODER = 3;
+    public static double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(302.34375); // FIXME Measure and set back left steer offset
+    
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 7;
     public static final int BACK_LEFT_STEER_MOTOR = 8;
-    public static final int BACK_LEFT_STEER_ENCODER = 12;
-    public static double BACK_LEFT_STEER_OFFSET = -Math.toRadians(0.0); // FIXME Measure and set back left steer offset
+    public static final int BACK_LEFT_STEER_ENCODER = 4;
+    public static double BACK_LEFT_STEER_OFFSET = -Math.toRadians(123.5687255859375); // FIXME Measure and set back left steer offset
+    
+    // BACK RIGHT : Railroad
+    public static final int BACK_RIGHT_DRIVE_MOTOR = 3;
+    public static final int BACK_RIGHT_STEER_MOTOR = 4;
+    public static final int BACK_RIGHT_STEER_ENCODER = 2;
+    public static double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(6.85272216796875); // FIXME Measure and set back right steer offset
     
     // The Max Acceleration Value for the robot [only in AUTO]
     public static final double MAX_ACCEL = 5;

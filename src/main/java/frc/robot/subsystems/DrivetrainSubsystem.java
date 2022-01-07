@@ -79,6 +79,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
         initializeMotors(tab);
     }
 
