@@ -25,6 +25,8 @@ import frc.robot.Constants;
 
 import static frc.robot.Constants.*;
 
+import java.util.Map;
+
 public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -117,8 +119,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void initializeMotors(){
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
-            m_tab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Front Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 4))
+                    .withSize(1, 4)
                     .withPosition(0, 0),
             // L1 - L4 Change in Constants
             GEAR_RATIO,
@@ -133,8 +135,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
-            m_tab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 4))
+                    .withSize(1, 4)
                     .withPosition(2, 0),
             GEAR_RATIO,
             FRONT_RIGHT_DRIVE_MOTOR,
@@ -144,8 +146,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-            m_tab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Back Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 4))
+                    .withSize(1, 4)
                     .withPosition(4, 0),
             GEAR_RATIO,
             BACK_LEFT_DRIVE_MOTOR,
@@ -155,8 +157,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
-            m_tab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 4))
+                    .withSize(1, 4)
                     .withPosition(6, 0),
             GEAR_RATIO,
             BACK_RIGHT_DRIVE_MOTOR,
