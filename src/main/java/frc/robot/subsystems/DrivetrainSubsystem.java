@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -71,22 +73,51 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
+    // Absolute Cancoders (1 per module)
+    private CANCoder m_frontLeftCanCoder;
+    private CANCoder m_frontRightCanCoder;
+    private CANCoder m_backLeftCanCoder;
+    private CANCoder m_backRightCanCoder;
+    
     // Odometry for storing the position of the robot
     private SwerveDriveOdometry m_odometry;
 
+    private ShuffleboardTab m_tab;
+
     // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
-    private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+    private ChassisSpeeds m_chassisSpeeds;
 
     public DrivetrainSubsystem() {
-        ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+        m_tab = Shuffleboard.getTab("Drivetrain");
+
+        m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
-        initializeMotors(tab);
+
+        initilizeEncoders();
+        initializeMotors();       
     }
 
-    public void initializeMotors(ShuffleboardTab tab){
+    public void initilizeEncoders(){
+        m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_STEER_ENCODER);
+        m_frontRightCanCoder = new CANCoder(Constants.FRONT_RIGHT_STEER_ENCODER);
+        m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_STEER_ENCODER);
+        m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_STEER_ENCODER);
+
+        m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+
+        m_frontLeftCanCoder.configSensorDirection(true);
+        m_frontRightCanCoder.configSensorDirection(true);
+        m_backLeftCanCoder.configSensorDirection(true);
+        m_backRightCanCoder.configSensorDirection(true);
+    }
+
+    public void initializeMotors(){
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
-            tab.getLayout("Front Left Module", BuiltInLayouts.kList)
+            m_tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(0, 0),
             // L1 - L4 Change in Constants
@@ -102,7 +133,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Front Right Module", BuiltInLayouts.kList)
+            m_tab.getLayout("Front Right Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(2, 0),
             GEAR_RATIO,
@@ -113,7 +144,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Back Left Module", BuiltInLayouts.kList)
+            m_tab.getLayout("Back Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(4, 0),
             GEAR_RATIO,
@@ -124,7 +155,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Back Right Module", BuiltInLayouts.kList)
+            m_tab.getLayout("Back Right Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(6, 0),
             GEAR_RATIO,
@@ -183,7 +214,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
     }
-
 
     /**
      * Returns the SwerveDriveKinematics object

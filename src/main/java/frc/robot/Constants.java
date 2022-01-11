@@ -82,8 +82,8 @@ public final class Constants {
     public static double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(6.85272216796875); // FIXME Measure and set back right steer offset
     
     // The Max Acceleration Value for the robot [only in AUTO]
-    public static final double MAX_ACCEL = 5;
+    public static final double MAX_ACCEL = 4;
 
     // The Max Velocity for the robot [only in AUTO]
-    public static final double MAX_VEL = 8;
+    public static final double MAX_VEL = 6.5;
 }

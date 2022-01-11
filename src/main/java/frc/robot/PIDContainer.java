@@ -9,12 +9,12 @@ public class PIDContainer {
     /**
      * PID To control the X Translation of the robot in Auto
      */
-    public static final PID AUTO_X_PID = new PID("Auto-X PID", 1, 0, 0);
+    public static final PID AUTO_X_PID = new PID("Auto-X PID", 0.0005, 0, 0.0001);
 
     /**
      * PID To control the Y Translation of the robot in Auto
      */
-    public static final PID AUTO_Y_PID = new PID("Auto-Y PID", 1, 0, 0);
+    public static final PID AUTO_Y_PID = new PID("Auto-Y PID", 0.00005, 0, 0.002);
     
     /**
      * PID To control the Rotation of the robot in Auto
