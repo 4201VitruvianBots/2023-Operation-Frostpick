@@ -92,12 +92,6 @@ public class SwerveControllerCommand extends CommandBase{
         ChassisSpeeds targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, rotation);
         SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
 
-        System.out.println("Loop Ran: ");
-        for(SwerveModuleState s : moduleStates){
-            System.out.println(s.toString());
-        }
-        System.out.println("\n\n");
-
         m_outputModuleStates.accept(moduleStates);
     }
 
