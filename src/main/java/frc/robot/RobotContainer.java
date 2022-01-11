@@ -67,11 +67,11 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("path").getTrajectory());
+        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("str").getTrajectory());
     }
 
     public PathPlannerTrajectory getTrajectory(){
-        return new LoadPath("path").getTrajectory();
+        return new LoadPath("str").getTrajectory();
     }
 
     /**
