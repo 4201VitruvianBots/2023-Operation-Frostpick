@@ -1,7 +1,10 @@
 package frc.robot.commands;
 
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.PIDContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -24,9 +27,12 @@ public class TrajectoryFollow {
                 // Getting the kinematics from the drivetrain
                 drivetrain.getKinematics(),
                 // Position PIDControllers from PIDContainer
-                PIDContainer.AUTO_X_PID.getAsPidController(),
-                PIDContainer.AUTO_Y_PID.getAsPidController(),
-                PIDContainer.AUTO_THETA_PID,
+                new PIDController(0, 0, 0),
+                new PIDController(0, 0, 0),
+                new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(1, 1)),
+                //PIDContainer.AUTO_X_PID.getAsPidController(),
+                // PIDContainer.AUTO_Y_PID.getAsPidController(),
+                // PIDContainer.AUTO_THETA_PID,
                 // A method refrence for setting the state of the modules
                 drivetrain::actuateModules,
                 // Requirment of a drivetrain subsystem
