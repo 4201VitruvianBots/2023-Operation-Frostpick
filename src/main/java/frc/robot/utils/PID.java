@@ -22,6 +22,7 @@ public class PID {
     NetworkTableEntry sb_kP;
     NetworkTableEntry sb_kI;
     NetworkTableEntry sb_kD;
+    NetworkTableEntry sb_error;
 
     double kP;
     double kI;
@@ -66,7 +67,12 @@ public class PID {
         kP = sb_kP.getDouble(kP);
         kI = sb_kI.getDouble(kI);
         kD = sb_kD.getDouble(kD);
+        
     }
+
+    // public void updateShuffleboard() {
+        
+    // }
 
     /**
      * @param constraints

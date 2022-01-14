@@ -2,19 +2,22 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utils.PID;
 
 public class PIDContainer {
 
+
     /**
      * PID To control the X Translation of the robot in Auto
      */
-    public static final PID AUTO_X_PID = new PID("Auto-X PID", 0.000005, 0, 0.001);
+    public static final PID AUTO_X_PID = new PID("Auto-X PID", 0, 0, 0); //0.00000005, 0, 0.001
 
     /**
      * PID To control the Y Translation of the robot in Auto
      */
-    public static final PID AUTO_Y_PID = new PID("Auto-Y PID", 0.000005, 0, 0.001);
+    public static final PID AUTO_Y_PID = new PID("Auto-Y PID", 0, 0, 0);
     
     /**
      * PID To control the Rotation of the robot in Auto
@@ -24,14 +27,20 @@ public class PIDContainer {
         new TrapezoidProfile.Constraints(1, 1));
 
     public PIDContainer(){
-        AUTO_X_PID.addToShuffleboard();
-        AUTO_Y_PID.addToShuffleboard();
-        AUTO_THETA_PID_CONTROLLER.addToShuffleboard();
+        // AUTO_X_PID.addToShuffleboard();
+        // AUTO_Y_PID.addToShuffleboard();
+        // AUTO_THETA_PID_CONTROLLER.addToShuffleboard();
     }
 
     public void periodic(){
-        AUTO_X_PID.syncShuffleboard();
-        AUTO_Y_PID.syncShuffleboard();
-        AUTO_THETA_PID_CONTROLLER.syncShuffleboard();
+        // AUTO_X_PID.syncShuffleboard();
+        // AUTO_Y_PID.syncShuffleboard();
+        // AUTO_THETA_PID_CONTROLLER.syncShuffleboard();
+        
+
+        // System.out.println(AUTO_X_PID.getAsPidController().getPositionError());
+        // SmartDashboard.putNumber("x error", AUTO_X_PID.getAsPidController().getPositionError());
+        // SmartDashboard.putNumber("y error", AUTO_Y_PID.getAsPidController().getPositionError());
+        // SmartDashboard.putNumber("theta error", AUTO_THETA_PID_CONTROLLER.getAsPidController().getPositionError());
     }
 }

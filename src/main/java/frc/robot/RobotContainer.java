@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -67,11 +68,11 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("str").getTrajectory());
+        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("simple").getTrajectory());
     }
 
     public PathPlannerTrajectory getTrajectory(){
-        return new LoadPath("str").getTrajectory();
+        return new LoadPath("simple").getTrajectory();
     }
 
     /**
@@ -104,7 +105,7 @@ public class RobotContainer {
      */
     private static double modifyAxis(double value) {
         // Deadband
-        value = deadband(value, 0.05);
+        value = deadband(value, 0.025);
 
         // Square the axis
         value = Math.copySign(value * value, value);
