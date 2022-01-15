@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,7 +15,7 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TrajectoryFollow;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.utils.LoadPath;
-import frc.robot.utils.PathPlannerTrajectory;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

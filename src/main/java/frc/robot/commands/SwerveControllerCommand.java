@@ -5,6 +5,9 @@ import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -17,8 +20,6 @@ import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.utils.PathPlannerTrajectory;
-import frc.robot.utils.PathPlannerTrajectory.PathPlannerState;
 
 
 public class SwerveControllerCommand extends CommandBase{
