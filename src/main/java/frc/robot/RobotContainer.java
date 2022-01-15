@@ -25,7 +25,7 @@ import frc.robot.utils.LoadPath;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+    private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final TrajectoryFollow m_trajectoryFollow = new TrajectoryFollow();
 
     private final XboxController m_controller = new XboxController(0);
