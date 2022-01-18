@@ -28,6 +28,9 @@ import static frc.robot.Constants.*;
 import java.util.Map;
 
 public class DrivetrainSubsystem extends SubsystemBase {
+
+    private static DrivetrainSubsystem instance = null;
+
     /**
      * The maximum voltage that will be delivered to the drive motors.
      * <p>
@@ -89,7 +92,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
     private ChassisSpeeds m_chassisSpeeds;
 
-    public DrivetrainSubsystem() {
+    private DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
 
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -238,5 +241,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void resetOdometry(Pose2d pose){
         m_odometry.resetPosition(pose, getGyroscopeRotation());
+    }
+
+    public static DrivetrainSubsystem getInstance() {
+        if (instance == null) {
+            instance = new DrivetrainSubsystem();
+        }
+
+        return instance;
     }
 }
