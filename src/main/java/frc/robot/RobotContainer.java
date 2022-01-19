@@ -5,11 +5,16 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.TrajectoryFollow;
@@ -27,7 +32,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final TrajectoryFollow m_trajectoryFollow = new TrajectoryFollow();
-
+    
     private final XboxController m_controller = new XboxController(0);
 
   /**
@@ -70,12 +75,20 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_trajectoryFollow.getTrajectoryCommand(m_drivetrainSubsystem, new LoadPath("simple").getTrajectory());
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("line", 0.5, 0.1);
+        return new SwerveControllerCommand(examplePath, 
+        DrivetrainSubsystem.getInstance()::getCurrentPose, 
+        DrivetrainSubsystem.getInstance().getKinematics(), 
+        new PIDController(0.1, 0, 0), 
+        new PIDController(0.1, 0, 0),
+        new ProfiledPIDController(0.1, 0, 0, new TrapezoidProfile.Constraints(1, 1)),
+        DrivetrainSubsystem.getInstance()::actuateModules, 
+        DrivetrainSubsystem.getInstance());
     }
 
-    public PathPlannerTrajectory getTrajectory(){
-        return new LoadPath("simple").getTrajectory();
-    }
+    // public PathPlannerTrajectory getTrajectory(){
+    //     return new LoadPath("simple").getTrajectory();
+    // }
 
     /**
      * Deadbands a value based on the given constraints
@@ -111,6 +124,7 @@ public class RobotContainer {
 
         // Square the axis
         value = Math.copySign(value * value, value);
+
 
         return value;
     }
