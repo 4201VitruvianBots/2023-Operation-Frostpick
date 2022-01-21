@@ -5,12 +5,19 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,18 +79,40 @@ public class RobotContainer {
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
+ * @throws IOException
    */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("line", 0.5, 0.1);
-        return new SwerveControllerCommand(examplePath, 
+
+        String trajectoryJSON = "pathplanner/generatedJSON/New Path.wpilib.json";
+        Trajectory trajectory = new Trajectory();
+        
+        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+        try {
+            trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+  
+        // PathPlannerTrajectory trajectory = null;
+        // try {
+        //     trajectory = PathPlanner.loadPath("New Path", 0.4, 0.1);
+        
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+        System.out.println("\n\n\n\n\n*************" + trajectory.getInitialPose());
+        DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
+        return new SwerveControllerCommand(trajectory, 
         DrivetrainSubsystem.getInstance()::getCurrentPose, 
         DrivetrainSubsystem.getInstance().getKinematics(), 
-        new PIDController(0.1, 0, 0), 
-        new PIDController(0.1, 0, 0),
-        new ProfiledPIDController(0.1, 0, 0, new TrapezoidProfile.Constraints(1, 1)),
+        new PIDController(0.5, 0, 0), 
+        new PIDController(0.5, 0, 0),
+        new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(1, 1)),
         DrivetrainSubsystem.getInstance()::actuateModules, 
-        DrivetrainSubsystem.getInstance());
+        DrivetrainSubsystem.getInstance()).andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)));
+    
     }
 
     // public PathPlannerTrajectory getTrajectory(){
