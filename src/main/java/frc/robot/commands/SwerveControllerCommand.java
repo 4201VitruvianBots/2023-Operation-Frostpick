@@ -13,21 +13,21 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.utils.PathPlannerTrajectory;
 import frc.robot.utils.PathPlannerTrajectory.PathPlannerState;
 
 
 public class SwerveControllerCommand extends CommandBase{
     private final Timer m_timer = new Timer();
-    private final PathPlannerTrajectory m_trajectory;
+    private final Trajectory m_trajectory;
     private final Supplier<Pose2d> m_pose;
     private final SwerveDriveKinematics m_kinematics;
     private final HolonomicDriveController m_controller;
     private final Consumer<SwerveModuleState[]> m_outputModuleStates;
+    private final Supplier<Rotation2d> m_desiredRotation;
 
     /**
      Constructs a new SwerveControllerCommand that when executed will follow the provided
@@ -51,14 +51,14 @@ public class SwerveControllerCommand extends CommandBase{
     */
     @SuppressWarnings("ParameterName")
     public SwerveControllerCommand(
-      PathPlannerTrajectory trajectory,
+      Trajectory trajectory,
       Supplier<Pose2d> pose,
       SwerveDriveKinematics kinematics,
       PIDController xController,
       PIDController yController,
       ProfiledPIDController thetaController,
-      Consumer<SwerveModuleState[]> outputModuleStates,
-      Subsystem... requirements) {
+      Supplier<Rotation2d> desiredRotation,
+      Consumer<SwerveModuleState[]> outputModuleStates) {
 
         m_trajectory = requireNonNullParam(trajectory, "trajectory", "SwerveControllerCommand");
         m_pose = requireNonNullParam(pose, "pose", "SwerveControllerCommand");
@@ -66,15 +66,36 @@ public class SwerveControllerCommand extends CommandBase{
 
         m_controller =
             new HolonomicDriveController(
-                xController, yController, thetaController);
-                // requireNonNullParam(xController, "xController", "SwerveControllerCommand"),
-                // requireNonNullParam(yController, "xController", "SwerveControllerCommand"),
-                // requireNonNullParam(thetaController, "thetaController", "SwerveControllerCommand"));
+                requireNonNullParam(xController, "xController", "SwerveControllerCommand"),
+                requireNonNullParam(yController, "xController", "SwerveControllerCommand"),
+                requireNonNullParam(thetaController, "thetaController", "SwerveControllerCommand"));
 
         m_outputModuleStates =
             requireNonNullParam(outputModuleStates, "frontLeftOutput", "SwerveControllerCommand");
 
-        addRequirements(requirements);
+        m_desiredRotation =
+            requireNonNullParam(desiredRotation, "desiredRotation", "SwerveControllerCommand");
+
+    }
+
+    public SwerveControllerCommand(
+      Trajectory trajectory,
+      Supplier<Pose2d> pose,
+      SwerveDriveKinematics kinematics,
+      PIDController xController,
+      PIDController yController,
+      ProfiledPIDController thetaController,
+      Consumer<SwerveModuleState[]> outputModuleStates) {
+        this(
+            trajectory,
+            pose,
+            kinematics,
+            xController,
+            yController,
+            thetaController,
+            () ->
+                trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters.getRotation(),
+            outputModuleStates);
     }
 
     @Override
@@ -87,11 +108,11 @@ public class SwerveControllerCommand extends CommandBase{
     public void execute() {
         double currentTime = m_timer.get();
 
-        PathPlannerState desiredState = (PathPlannerState) m_trajectory.sample(currentTime);
+        var desiredState = (PathPlannerState) m_trajectory.sample(currentTime);
         Rotation2d rotation =  desiredState.holonomicRotation;
 
-        ChassisSpeeds targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, rotation);
-        SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
+        ChassisSpeeds targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, m_desiredRotation.get());
+        var moduleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
 
         m_outputModuleStates.accept(moduleStates);
     }

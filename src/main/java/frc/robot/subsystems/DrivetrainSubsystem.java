@@ -10,6 +10,9 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,6 +20,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -28,40 +33,18 @@ import static frc.robot.Constants.*;
 import java.util.Map;
 
 public class DrivetrainSubsystem extends SubsystemBase {
-    /**
-     * The maximum voltage that will be delivered to the drive motors.
-     * <p>
-     * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
-     * Calculate by: Motor fre speed RPM / 60 * Drive Reduction * Wheel Diameter Meters * pi
-     */
-    public static final double MAX_VOLTAGE = Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
-    /**
-     * The maximum velocity of the robot in meters per second.
-     * <p>
-     * This is a measure of how fast the robot should be able to drive in a straight line.
-     */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = Constants.FALCON_500_FREE_SPEED / 60.0 *
-            MODULE_CONFIGURATION.getDriveReduction() *
-            MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
-    /**
-     * The maximum angular velocity of the robot in radians per second.
-     * <p>
-     * This is a measure of how fast the robot can rotate in place.
-     */
-    // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
-            Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
+    
+    private static DrivetrainSubsystem instance;
 
-    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-            // Front left
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Front right
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back left
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back right
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
-    );
+    public static DrivetrainSubsystem getInstance() {
+        if (instance == null) {
+            instance = new DrivetrainSubsystem();
+        }
+
+        return instance;
+    }
+
+    private final SwerveDriveKinematics m_kinematics = kSwerveKinematics;
 
     /**
      * The important thing about how you configure your gyroscope is that rotating the robot counter-clockwise should
@@ -84,20 +67,34 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Odometry for storing the position of the robot
     private SwerveDriveOdometry m_odometry;
 
+    // Max of 2 meters per second right now
+    private SwerveDriveKinematicsConstraint m_constraint = new SwerveDriveKinematicsConstraint(m_kinematics, 2);
+
     private ShuffleboardTab m_tab;
 
     // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
     private ChassisSpeeds m_chassisSpeeds;
 
+    private HolonomicDriveController m_holonomicController;
+    private ProfiledPIDController m_rotationalController;
+
     public DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
 
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
-        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
+        m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d());
+
+        m_rotationalController = new ProfiledPIDController(4, 0, 0, kThetaConstraints);
+        m_rotationalController.enableContinuousInput(-Math.PI, Math.PI);
+
+        m_holonomicController = new HolonomicDriveController(new PIDController(1., 0, 0), 
+                                                             new PIDController(1., 0, 0), 
+                                                             m_rotationalController);
 
         initilizeEncoders();
         initializeMotors();       
     }
+
 
     public void initilizeEncoders(){
         m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_STEER_ENCODER);
@@ -166,6 +163,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_STEER_ENCODER,
             BACK_RIGHT_STEER_OFFSET
         );
+
     }
 
     /**
@@ -183,6 +181,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public Rotation2d getGyroscopeRotation() {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+    }
+
+    public Rotation2d getYaw() {
+        double[] ypr = new double[3];
+        m_pigeon.getYawPitchRoll(ypr);
+        return (INVERT_GYRO) ? Rotation2d.fromDegrees(360 - ypr[0]) : Rotation2d.fromDegrees(ypr[0]);
     }
 
     /**
@@ -238,5 +242,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void resetOdometry(Pose2d pose){
         m_odometry.resetPosition(pose, getGyroscopeRotation());
+    }
+
+    public HolonomicDriveController getHolonomicController() {
+        return m_holonomicController;
     }
 }

@@ -8,6 +8,10 @@ import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.utils.Conversion;
 
 /**
@@ -19,6 +23,9 @@ import frc.robot.utils.Conversion;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final boolean INVERT_GYRO = false; // Always ensure Gyro is CCW+ CW-
+
     /**
      * The left-to-right distance between the drivetrain wheels
      *
@@ -81,9 +88,55 @@ public final class Constants {
     public static final int BACK_LEFT_STEER_ENCODER = 12;
     public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(126.28784179687499); // FIXME Measure and set back left steer offset
     
-    // The Max Acceleration Value for the robot [only in AUTO]
-    public static final double MAX_ACCEL = 4;
+    // The Max Acceleration Value for the robot [only in AUTO] in mps
+    public static final double MAX_AUTO_ACCEL = 3;
 
     // The Max Velocity for the robot [only in AUTO]
-    public static final double MAX_VEL = 6.5;
+    public static final double MAX_AUTO_VELOCITY = 4;
+
+    /**
+     * The maximum voltage that will be delivered to the drive motors.
+     * <p>
+     * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
+     * Calculate by: Motor fre speed RPM / 60 * Drive Reduction * Wheel Diameter Meters * pi
+     */
+    public static final double MAX_VOLTAGE = Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
+    /**
+     * The maximum velocity of the robot in meters per second.
+     * <p>
+     * This is a measure of how fast the robot should be able to drive in a straight line.
+     */
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = Constants.FALCON_500_FREE_SPEED / 60.0 *
+            MODULE_CONFIGURATION.getDriveReduction() *
+            MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
+    /**
+     * The maximum angular velocity of the robot in radians per second.
+     * <p>
+     * This is a measure of how fast the robot can rotate in place.
+     */
+    // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
+            Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
+
+    //Constraints for the profiled angle controller
+    public static final double kMaxAngularSpeedRadiansPerSecond = 2.0*Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.pow(kMaxAngularSpeedRadiansPerSecond, 2);
+
+    public static final double kSlowMaxSpeedMetersPerSecond = 1.0;
+    public static final double kSlowMaxAccelerationMetersPerSecondSquared = 3.0;
+
+    public static final TrapezoidProfile.Constraints kThetaConstraints = new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared)
+
+    public static final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(
+        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
+        );
+    
+    public static final TrajectoryConfig kZeroToSlow =
+        new TrajectoryConfig(kSlowMaxSpeedMetersPerSecond, kSlowMaxAccelerationMetersPerSecondSquared)
+        .setKinematics(kSwerveKinematics)
+        .setStartVelocity(0)
+        .setEndVelocity(1.0);
 }
