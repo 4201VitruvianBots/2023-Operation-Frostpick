@@ -33,6 +33,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static DrivetrainSubsystem instance = null;
 
     /**
+     * The scale factor that the speed during Auto trajectories will be affected by.
+     * <p>
+     * This can be increased to go faster in auto, decreased to go slower.
+     * Make sure you change in both the PathPlanner gui and in the swerve controller command!
+     */
+    public static final double AUTO_DRIVE_SCALE = 0.1;
+    /**
      * The maximum voltage that will be delivered to the drive motors.
      * <p>
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
@@ -159,6 +166,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_LEFT_STEER_ENCODER,
             BACK_LEFT_STEER_OFFSET
         );
+        
 
         m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
@@ -196,6 +204,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds = chassisSpeeds;
     }
 
+    public void driveAuto(ChassisSpeeds chassisSpeeds) {
+        m_chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE;
+        m_chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond * AUTO_DRIVE_SCALE;
+        m_chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond * AUTO_DRIVE_SCALE;
+    }
+
     /**
      * Sets module states of all the modules
      * @param states
@@ -206,6 +220,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         drive(m_kinematics.toChassisSpeeds(states));
     }
 
+    public void actuateModulesAuto(SwerveModuleState[] states){
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        driveAuto(m_kinematics.toChassisSpeeds(states));
+    }
+
     /**
      * Periodic method of Drivetrain, runs every 20ms
      */
@@ -214,7 +233,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         m_odometry.update(getGyroscopeRotation(), states);
         // System.out.println(getGyroscopeRotation());
-
+        // System.out.println(getCurrentPose());
+        // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());

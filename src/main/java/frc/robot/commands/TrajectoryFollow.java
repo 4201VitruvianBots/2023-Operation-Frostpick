@@ -35,7 +35,7 @@ public class TrajectoryFollow {
                 // PIDContainer.AUTO_Y_PID.getAsPidController(),
                 // PIDContainer.AUTO_THETA_PID,
                 // A method refrence for setting the state of the modules
-                drivetrain::actuateModules,
+                drivetrain::actuateModulesAuto,
                 // Requirment of a drivetrain subsystem
                 drivetrain);
 

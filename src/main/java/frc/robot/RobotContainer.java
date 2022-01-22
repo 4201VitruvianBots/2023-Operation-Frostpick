@@ -46,6 +46,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
     // Left stick Y axis -> forward and backwards movement
@@ -84,33 +86,31 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
 
-        String trajectoryJSON = "pathplanner/generatedJSON/New Path.wpilib.json";
-        Trajectory trajectory = new Trajectory();
+        // String trajectoryJSON = "pathplanner/generatedJSON/holonomicPath.wpilib.json";
+        // Trajectory trajectory = new Trajectory();
         
-        Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-        try {
-            trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-  
-        // PathPlannerTrajectory trajectory = null;
+        // Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
         // try {
-        //     trajectory = PathPlanner.loadPath("New Path", 0.4, 0.1);
-        
-        // } catch (Exception e) {
+        //     trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+        // } catch (IOException e) {
         //     e.printStackTrace();
         // }
-        System.out.println("\n\n\n\n\n*************" + trajectory.getInitialPose());
+        
+        PathPlannerTrajectory trajectory = null;
+        try {
+            trajectory = PathPlanner.loadPath("holonomicPath", 1, 4);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        //System.out.println("\n\n\n\n\n*************" + trajectory.getInitialPose());
         DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
         return new SwerveControllerCommand(trajectory, 
         DrivetrainSubsystem.getInstance()::getCurrentPose, 
         DrivetrainSubsystem.getInstance().getKinematics(), 
-        new PIDController(0.5, 0, 0), 
-        new PIDController(0.5, 0, 0),
+        new PIDController(10, 0, 0), 
+        new PIDController(10, 0, 0),
         new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(1, 1)),
-        DrivetrainSubsystem.getInstance()::actuateModules, 
+        DrivetrainSubsystem.getInstance()::actuateModulesAuto, 
         DrivetrainSubsystem.getInstance()).andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)));
     
     }
