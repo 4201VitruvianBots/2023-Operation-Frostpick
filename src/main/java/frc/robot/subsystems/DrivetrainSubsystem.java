@@ -38,8 +38,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * This can be increased to go faster in auto, decreased to go slower.
      * Make sure you change in both the PathPlanner gui and in the swerve controller command!
      */
-    public static final double AUTO_DRIVE_SCALE = 0.1;
-    /**
+    public static final double AUTO_DRIVE_SCALE = .01;
+    /**+
      * The maximum voltage that will be delivered to the drive motors.
      * <p>
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
@@ -205,9 +205,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void driveAuto(ChassisSpeeds chassisSpeeds) {
-        m_chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE;
+        m_chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE;
         m_chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond * AUTO_DRIVE_SCALE;
         m_chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond * AUTO_DRIVE_SCALE;
+        
     }
 
     /**
@@ -235,6 +236,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // System.out.println(getGyroscopeRotation());
         // System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
+        System.out.println(MAX_VOLTAGE);
+        System.out.println("w/o scale:" + m_chassisSpeeds.vxMetersPerSecond);
+        System.out.println(m_chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE);
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
