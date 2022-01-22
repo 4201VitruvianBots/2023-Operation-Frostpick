@@ -46,8 +46,8 @@ public class DefaultDriveCommand extends CommandBase {
         m_drivetrainSubsystem.drive(
                 // fromFielRelativeSpeeds, provides Field Relative drive
                 ChassisSpeeds.fromFieldRelativeSpeeds(
-                        m_translationXSupplier.getAsDouble() * 0.1,
-                        m_translationYSupplier.getAsDouble() * 0.1,
+                        m_translationXSupplier.getAsDouble(),
+                        m_translationYSupplier.getAsDouble(),
                         m_rotationSupplier.getAsDouble(),
                         m_drivetrainSubsystem.getGyroscopeRotation()
                 )

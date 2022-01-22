@@ -7,9 +7,11 @@ package frc.robot;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,7 +40,6 @@ import frc.robot.utils.LoadPath;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
-    private final TrajectoryFollow m_trajectoryFollow = new TrajectoryFollow();
     
     private final XboxController m_controller = new XboxController(0);
 
@@ -104,12 +105,14 @@ public class RobotContainer {
         } 
         //System.out.println("\n\n\n\n\n*************" + trajectory.getInitialPose());
         DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
+        var finalAngle = ((PathPlannerState) trajectory.getEndState());
         return new SwerveControllerCommand(trajectory, 
         DrivetrainSubsystem.getInstance()::getCurrentPose, 
         DrivetrainSubsystem.getInstance().getKinematics(), 
-        new PIDController(10, 0, 0), 
-        new PIDController(10, 0, 0),
-        new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(1, 1)),
+        new PIDController(1, 0, 0), 
+        new PIDController(1, 0, 0),
+        new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2))),
+        () -> finalAngle.holonomicRotation,
         DrivetrainSubsystem.getInstance()::actuateModulesAuto, 
         DrivetrainSubsystem.getInstance()).andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)));
     
