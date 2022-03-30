@@ -24,40 +24,40 @@ public final class Constants {
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Conversion.inchesToMeters(22.181999);
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Conversion.inchesToMeters(21.5);
 
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = Conversion.inchesToMeters(22.181999);
+    public static final double DRIVETRAIN_WHEELBASE_METERS = Conversion.inchesToMeters(21.5);
 
     /**
      * The free speed of a Falcon 500 Motor
-     * 
+     *
      * In actual RPM, not ticks
      */
     public static final double FALCON_500_FREE_SPEED = 6380;
     /**
      * The gear ratio of the Swerve Module
-     * 
+     *
      * From L1-L4
      */
     public static final GearRatio GEAR_RATIO = GearRatio.L2;
     /**
      * The type of Swerve Module used
-     * 
+     *
      * From L1-L4
      */
-    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
+    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK3_STANDARD;
 
     /**
      * CAN ID of the PigeonIMU
      */
-    public static final int DRIVETRAIN_PIGEON_ID = 1;
+    public static final int DRIVETRAIN_NAVX_ID = 1;
 
-    
+
     // FRONT LEFT : Florida
     public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_STEER_MOTOR = 2;
